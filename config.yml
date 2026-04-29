@@ -1,0 +1,41 @@
+# =============================================================================
+# PAYER NBA PROTOTYPE - CONFIGURATION
+# =============================================================================
+# Edit this file to customize your deployment, then run:
+#   ./deploy.sh
+#
+# FOR NEW DEPLOYMENTS:
+#   1. Change workspace.host to your Databricks workspace URL
+#   2. Change workspace.profile to your CLI profile name
+#   3. Change unity_catalog.catalog to your catalog name
+#   4. Change lakebase.project to a unique name (will be created if doesn't exist)
+#   5. Run ./deploy.sh - it will create everything automatically!
+#
+# =============================================================================
+
+# Databricks Workspace (REQUIRED - change these!)
+workspace:
+  host: "https://fevm-serverless-mwelio-humana.cloud.databricks.com"
+  profile: "fevm"  # CLI profile name from ~/.databrickscfg
+
+# Unity Catalog (REQUIRED - change catalog to yours)
+unity_catalog:
+  catalog: "humana_payer"        # Your Unity Catalog catalog
+  schema: "next_best_action"     # Schema name (will be created)
+
+# Lakebase (PostgreSQL) - will be auto-created if project doesn't exist
+lakebase:
+  project: "lakebase-demo-autoscale"   # Unique project name
+  branch: "production"                  # Don't change
+  database: "projects/lakebase-demo-autoscale/branches/production/databases/db-732u-ajatgak0nj"
+  host: "ep-orange-scene-d22vm6d5.database.us-east-1.cloud.databricks.com"  # Auto-updated on creation
+  schema: "next_best_action_ps"         # Lakebase schema name
+
+# App Settings
+app:
+  name_prefix: "payer-nba-console"      # App will be named: {prefix}-dev
+  compute_size: "MEDIUM"
+
+# Data Generation
+data:
+  num_members: 5000

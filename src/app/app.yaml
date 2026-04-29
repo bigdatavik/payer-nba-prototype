@@ -1,0 +1,30 @@
+command:
+  - "streamlit"
+  - "run"
+  - "app.py"
+  - "--server.port"
+  - "8000"
+  - "--server.address"
+  - "0.0.0.0"
+
+permissions:
+  - permission: "genie:execute"
+    description: "Query Genie Spaces for natural language data exploration"
+
+resources:
+  - name: lakebase
+    postgres:
+      branch: "projects/lakebase-demo-autoscale/branches/production"
+      permission: "CAN_CONNECT_AND_CREATE"
+  - name: genie_space
+    genie_space:
+      space_id: "01f14366100a1e50935d263da38c1d37"
+      permission: "CAN_RUN"
+
+env:
+  - name: LAKEBASE_SCHEMA
+    value: "next_best_action_ps"
+  - name: DB_CONNECTION_STRING
+    valueFrom: lakebase
+  - name: GENIE_SPACE_ID
+    value: "01f14366100a1e50935d263da38c1d37"

@@ -1,0 +1,12 @@
+resources:
+  apps:
+    nba_member_console:
+      name: payer-nba-console-${bundle.target}
+      description: "Healthcare Payer Next-Best-Action Member 360 Console"
+      source_code_path: ../src/app
+      resources:
+        - name: lakebase
+          postgres:
+            branch: projects/${var.lakebase_project}/branches/${var.lakebase_branch}
+            database: ${var.lakebase_database}
+            permission: CAN_CONNECT_AND_CREATE

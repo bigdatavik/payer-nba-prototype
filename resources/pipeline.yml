@@ -1,0 +1,22 @@
+resources:
+  pipelines:
+    nba_data_pipeline:
+      name: "[${bundle.target}] Payer NBA Data Pipeline"
+      catalog: ${var.catalog}
+      target: ${var.schema}
+      serverless: true
+      root_path: "../src/pipelines/nba_pipeline"
+      libraries:
+        - glob:
+            include: ../src/pipelines/nba_pipeline/transformations/**
+      configuration:
+        catalog: ${var.catalog}
+        schema: ${var.schema}
+      development: true
+      continuous: false
+      photon: true
+      permissions:
+        - level: CAN_VIEW
+          group_name: "users"
+        - level: CAN_MANAGE
+          user_name: ${workspace.current_user.userName}

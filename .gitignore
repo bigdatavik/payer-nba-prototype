@@ -1,0 +1,79 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Databricks
+.databricks/
+*.bak
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Project-specific ignores
+ignore/
+.claude/
+.cursor/
+.mcp.json
+.databricks-resources.json
+
+# Databricks bundle state
+.bundle/
+.databricks/
+
+# AI dev kit / IDE skills (not needed for users)
+.ai-dev-kit/
+.github/skills/
+.windsurf/

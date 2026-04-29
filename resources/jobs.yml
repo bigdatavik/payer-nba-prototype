@@ -1,0 +1,150 @@
+resources:
+  jobs:
+    # ==========================================================================
+    # END-TO-END ORCHESTRATION JOB
+    # Run this for a complete fresh deployment
+    # ==========================================================================
+    full_deployment:
+      name: "[${bundle.target}] Full End-to-End Deployment"
+      tasks:
+        - task_key: "reset_schemas"
+          notebook_task:
+            notebook_path: ../src/notebooks/reset_schemas.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              lakebase_host: ${var.lakebase_host}
+              lakebase_schema: ${var.lakebase_schema}
+              lakebase_project: ${var.lakebase_project}
+
+        - task_key: "generate_data"
+          depends_on:
+            - task_key: "reset_schemas"
+          notebook_task:
+            notebook_path: ../src/scripts/generate_synthetic_data.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+
+        - task_key: "run_pipeline"
+          depends_on:
+            - task_key: "generate_data"
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.nba_data_pipeline.id}
+
+        - task_key: "sync_to_lakebase"
+          depends_on:
+            - task_key: "run_pipeline"
+          notebook_task:
+            notebook_path: ../src/notebooks/sync_to_lakebase.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              lakebase_host: ${var.lakebase_host}
+              lakebase_schema: ${var.lakebase_schema}
+              lakebase_project: ${var.lakebase_project}
+
+        - task_key: "setup_genie_space"
+          depends_on:
+            - task_key: "run_pipeline"
+          notebook_task:
+            notebook_path: ../src/notebooks/setup_genie_space.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              warehouse_id: ${var.warehouse_id}
+              genie_space_name: "Payer Engagement Analytics Copilot"
+
+      permissions:
+        - level: CAN_VIEW
+          group_name: "users"
+        - level: CAN_MANAGE
+          user_name: ${workspace.current_user.userName}
+
+    # ==========================================================================
+    # INDIVIDUAL JOBS
+    # ==========================================================================
+    generate_synthetic_data:
+      name: "[${bundle.target}] Generate Payer Synthetic Data"
+      tasks:
+        - task_key: "generate_data"
+          notebook_task:
+            notebook_path: ../src/scripts/generate_synthetic_data.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+      permissions:
+        - level: CAN_VIEW
+          group_name: "users"
+        - level: CAN_MANAGE
+          user_name: ${workspace.current_user.userName}
+
+    run_nba_pipeline:
+      name: "[${bundle.target}] Run NBA Data Pipeline"
+      tasks:
+        - task_key: "run_pipeline"
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.nba_data_pipeline.id}
+      schedule:
+        quartz_cron_expression: "0 0 6 * * ?"
+        timezone_id: "America/New_York"
+      permissions:
+        - level: CAN_VIEW
+          group_name: "users"
+        - level: CAN_MANAGE
+          user_name: ${workspace.current_user.userName}
+
+    sync_to_lakebase:
+      name: "[${bundle.target}] Sync Serving Tables to Lakebase"
+      tasks:
+        - task_key: "sync_tables"
+          notebook_task:
+            notebook_path: ../src/notebooks/sync_to_lakebase.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              lakebase_host: ${var.lakebase_host}
+              lakebase_schema: ${var.lakebase_schema}
+              lakebase_project: ${var.lakebase_project}
+      permissions:
+        - level: CAN_VIEW
+          group_name: "users"
+        - level: CAN_MANAGE
+          user_name: ${workspace.current_user.userName}
+
+    feedback_backfill:
+      name: "[${bundle.target}] Backfill Feedback to Unity Catalog"
+      tasks:
+        - task_key: "backfill_feedback"
+          notebook_task:
+            notebook_path: ../src/notebooks/feedback_backfill.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              lakebase_host: ${var.lakebase_host}
+              lakebase_schema: ${var.lakebase_schema}
+      schedule:
+        quartz_cron_expression: "0 0 2 * * ?"
+        timezone_id: "America/New_York"
+      permissions:
+        - level: CAN_VIEW
+          group_name: "users"
+        - level: CAN_MANAGE
+          user_name: ${workspace.current_user.userName}
+
+    setup_genie_space:
+      name: "[${bundle.target}] Setup Genie Space"
+      tasks:
+        - task_key: "setup_genie"
+          notebook_task:
+            notebook_path: ../src/notebooks/setup_genie_space.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              warehouse_id: ${var.warehouse_id}
+              genie_space_name: "Payer Engagement Analytics Copilot"
+      permissions:
+        - level: CAN_VIEW
+          group_name: "users"
+        - level: CAN_MANAGE
+          user_name: ${workspace.current_user.userName}

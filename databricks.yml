@@ -1,0 +1,43 @@
+bundle:
+  name: payer-nba-prototype
+
+include:
+  - resources/*.yml
+
+variables:
+  catalog:
+    description: Unity Catalog catalog name
+    default: humana_payer
+  schema:
+    description: Unity Catalog schema name
+    default: next_best_action
+  lakebase_host:
+    description: Lakebase PostgreSQL endpoint host
+    default: ep-orange-scene-d22vm6d5.database.us-east-1.cloud.databricks.com
+  lakebase_project:
+    description: Lakebase autoscaling project name
+    default: lakebase-demo-autoscale
+  lakebase_branch:
+    description: Lakebase branch
+    default: production
+  lakebase_database:
+    description: Lakebase database resource path
+    default: projects/lakebase-demo-autoscale/branches/production/databases/db-732u-ajatgak0nj
+  lakebase_schema:
+    description: Lakebase schema for serving tables
+    default: next_best_action_ps
+  warehouse_id:
+    description: SQL Warehouse ID for queries
+    lookup:
+      warehouse: "Serverless Starter Warehouse"
+
+workspace:
+  host: https://fevm-serverless-mwelio-humana.cloud.databricks.com
+
+targets:
+  dev:
+    default: true
+    mode: development
+
+  prod:
+    mode: production
